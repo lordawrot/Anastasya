@@ -2,9 +2,11 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>АНАСТАСИЯ · нежная динамика</title>
+    <!-- КЛЮЧЕВОЙ МЕТА-ТЕГ для правильного масштабирования на телефонах -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>АНАСТАСИЯ · плавная динамика</title>
     <style>
+        /* БАЗОВЫЕ СБРОСЫ И УЛУЧШЕНИЯ ПРОИЗВОДИТЕЛЬНОСТИ */
         * {
             margin: 0;
             padding: 0;
@@ -14,47 +16,48 @@
         body {
             font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
             background: #faf3f0;
-            scroll-behavior: smooth;
+            scroll-behavior: smooth; /* плавный скролл */
             overflow-x: hidden;
+            /* отключаем нативные pull-to-refresh и подсветку касания на мобильных */
+            overscroll-behavior: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* общие половинки с мобильной оптимизацией */
+        /* ОБЩИЙ КОНТЕЙНЕР СЕКЦИИ — используем 100dvh для реальной высоты экрана */
         .half {
-            min-height: 100vh;  /* fallback */
-            min-height: 100dvh;  /* modern dynamic viewport */
+            min-height: 100vh;       /* fallback */
+            min-height: 100dvh;       /* современные браузеры — точная высота без адресной строки */
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;
-            transition: background-color 0.6s ease;
+            overflow: hidden;          /* скрываем выходящие частицы */
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            /* включаем аппаратное ускорение для слоёв */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            will-change: transform;    /* подсказка браузеру для оптимизации */
         }
 
-        /* ========== ВЕРХНЯЯ ПОЛОВИНА — нежный персик/пыль ========= */
+        /* ВЕРХНЯЯ ПОЛОВИНА — персик */
         .peach-half {
             background: linear-gradient(145deg, #fff1eb 0%, #fad9cf 100%);
             color: #4a3b36;
         }
 
+        /* плавное свечение — делаем очень лёгким, без частых изменений layout */
         .peach-half::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 30% 50%, rgba(255, 230, 210, 0.5) 0%, transparent 60%),
-                        repeating-linear-gradient(45deg, rgba(255,230,210,0.2) 0px, rgba(255,230,210,0.2) 20px, transparent 20px, transparent 40px);
+            background: radial-gradient(circle at 30% 50%, rgba(255, 230, 210, 0.5) 0%, transparent 60%);
             pointer-events: none;
-            animation: softShimmer 14s infinite alternate;
+            opacity: 0.4;
+            /* вместо анимации движения фона — статика, меньше нагрузка */
         }
 
-        @keyframes softShimmer {
-            0% { opacity: 0.2; background-position: 0 0; }
-            50% { opacity: 0.6; background-position: 40px 40px; }
-            100% { opacity: 0.2; background-position: 80px 0; }
-        }
-
-        /* ========== НИЖНЯЯ ПОЛОВИНА — нежная мята/аква ========= */
+        /* НИЖНЯЯ ПОЛОВИНА — мята */
         .mint-half {
             background: linear-gradient(145deg, #e0f2f1 0%, #c8e6e0 100%);
             color: #2b5e5a;
@@ -64,73 +67,75 @@
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 80% 30%, rgba(190, 240, 230, 0.5) 0%, transparent 60%),
-                        repeating-linear-gradient(135deg, rgba(190,240,230,0.2) 0px, rgba(190,240,230,0.2) 20px, transparent 20px, transparent 40px);
+            background: radial-gradient(circle at 80% 30%, rgba(190, 240, 230, 0.5) 0%, transparent 60%);
             pointer-events: none;
-            animation: softDrift 16s infinite alternate;
+            opacity: 0.4;
         }
 
-        @keyframes softDrift {
-            0% { opacity: 0.2; background-position: 0 0; }
-            50% { opacity: 0.6; background-position: -30px 30px; }
-            100% { opacity: 0.2; background-position: 0 60px; }
-        }
-
+        /* КОНТЕЙНЕР КОНТЕНТА */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 1.5rem 1rem;  /* уменьшены отступы для мобильных */
+            padding: 1.5rem 1rem;
             position: relative;
             z-index: 10;
             width: 100%;
         }
 
-        /* адаптивная типографика */
+        /* ТИПОГРАФИЯ — ОТЗЫВЧИВАЯ И ЛЁГКАЯ */
         .peach-title {
-            font-size: clamp(2.2rem, 12vw, 5rem);  /* более отзывчиво */
+            font-size: clamp(2.2rem, 11vw, 5rem);  /* немного уменьшили максимальную для экономии */
             font-weight: 300;
             letter-spacing: 0.1em;
             color: #6d4c41;
             text-transform: uppercase;
             margin-bottom: 0.3rem;
-            text-shadow: 0 0 10px rgba(255, 215, 190, 0.8), 0 0 30px #ffcdb0;
-            animation: floatWord 5s ease-in-out infinite, softGlow 4s alternate infinite;
+            text-shadow: 0 0 10px rgba(255, 215, 190, 0.6);
+            /* убираем сложную анимацию floatWord на мобильных — оставляем только очень легкое смещение через трансформ */
+            animation: none; /* отключаем, так как это вызывает перерисовку */
+            /* небольшой эффект присутствия через opacity */
+            transition: text-shadow 0.3s;
             word-break: break-word;
             line-height: 1.2;
         }
 
-        .peach-wave {
-            font-size: clamp(1.2rem, 5vw, 2.2rem);
-            font-weight: 200;
-            color: #aa7e6a;
-            margin-bottom: 1.5rem;
-            padding-left: 1.2rem;
-            border-left: 2px solid #dbb6a2;
-            animation: gentleSlide 6s infinite, colorPeach 7s infinite;
-        }
-
-        @keyframes gentleSlide {
-            0% { padding-left: 1.2rem; border-left-width: 2px; }
-            50% { padding-left: 2rem; border-left-width: 4px; border-left-color: #f0a07c; }
-            100% { padding-left: 1.2rem; border-left-width: 2px; }
-        }
-
-        @keyframes colorPeach {
-            0%, 100% { color: #aa7e6a; }
-            33% { color: #b68973; }
-            66% { color: #9d6f5a; }
+        /* добавляем очень легкое дыхание текста только через opacity (дешево) */
+        .peach-title {
+            animation: gentlePulse 5s infinite alternate;
         }
 
         .mint-title {
-            font-size: clamp(2.2rem, 12vw, 5rem);
+            font-size: clamp(2.2rem, 11vw, 5rem);
             font-weight: 200;
             letter-spacing: 0.1em;
             color: #1d6f6b;
             text-transform: uppercase;
             margin-bottom: 0.8rem;
-            text-shadow: 0 0 15px #b0e0dd, 0 0 40px #9ad4d0;
-            animation: sway 6s infinite alternate, breathe 4s infinite;
+            text-shadow: 0 0 15px #b0e0dd;
+            animation: gentlePulse 6s infinite alternate;
             line-height: 1.2;
+        }
+
+        @keyframes gentlePulse {
+            0% { opacity: 0.9; text-shadow: 0 0 8px currentColor; }
+            100% { opacity: 1; text-shadow: 0 0 18px currentColor; }
+        }
+
+        .peach-wave {
+            font-size: clamp(1.2rem, 5vw, 2rem);
+            font-weight: 200;
+            color: #aa7e6a;
+            margin-bottom: 1.5rem;
+            padding-left: 1rem;
+            border-left: 2px solid #dbb6a2;
+            /* убираем анимации движения — оставляем только изменение цвета (дешево) */
+            animation: colorPeach 8s infinite alternate;
+        }
+
+        @keyframes colorPeach {
+            0% { color: #aa7e6a; border-left-color: #dbb6a2; }
+            50% { color: #b68973; border-left-color: #e6b49a; }
+            100% { color: #aa7e6a; border-left-color: #dbb6a2; }
         }
 
         .mint-sub {
@@ -142,168 +147,88 @@
             padding: 0 0.5rem 0.5rem;
             border-bottom: 1px dashed #8ec9c2;
             display: inline-block;
-            animation: borderPulse 5s infinite alternate, shiftColor 8s infinite;
+            animation: shiftColor 8s infinite alternate;
             word-break: break-word;
         }
 
-        @keyframes borderPulse {
-            0% { border-bottom-color: #8ec9c2; }
-            50% { border-bottom-color: #c3ede8; border-bottom-width: 3px; }
-            100% { border-bottom-color: #8ec9c2; }
-        }
-
         @keyframes shiftColor {
-            0% { color: #3c8d87; }
-            50% { color: #57aca4; }
-            100% { color: #3c8d87; }
+            0% { color: #3c8d87; border-bottom-color: #8ec9c2; }
+            50% { color: #57aca4; border-bottom-color: #b0dfd8; }
+            100% { color: #3c8d87; border-bottom-color: #8ec9c2; }
         }
 
-        @keyframes floatWord {
-            0% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-6px) scale(1.01); }  /* меньше движение */
-            100% { transform: translateY(0) scale(1); }
-        }
-
-        @keyframes softGlow {
-            0% { text-shadow: 0 0 8px #ffdcc4, 0 0 25px #fccbb0; }
-            100% { text-shadow: 0 0 15px #ffc4a7, 0 0 40px #f8b595; }
-        }
-
-        @keyframes sway {
-            0% { transform: rotate(0deg); }
-            33% { transform: rotate(0.5deg); }
-            66% { transform: rotate(-0.5deg); }
-            100% { transform: rotate(0deg); }
-        }
-
-        @keyframes breathe {
-            0% { letter-spacing: 0.1em; filter: brightness(1); }
-            50% { letter-spacing: 0.15em; filter: brightness(1.08); }
-            100% { letter-spacing: 0.1em; filter: brightness(1); }
-        }
-
-        /* ---------- СЕТКА ФОТО — АДАПТИВНАЯ ---------- */
+        /* СЕТКА ФОТО — 2 колонки, без анимаций трансформации на мобильных (тяжело) */
         .photo-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);  /* всегда 2 колонки на мобильных и выше */
-            gap: 12px;  /* уменьшенный отступ на маленьких */
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
             margin: 1.5rem 0;
         }
 
         @media (min-width: 480px) {
-            .photo-grid {
-                gap: 20px;
-            }
+            .photo-grid { gap: 20px; }
         }
 
-        @media (min-width: 768px) {
-            .photo-grid {
-                gap: 30px;
-            }
-        }
-
-        /* ======== рамки для верхней (персик) ======= */
-        .peach-frame {
+        /* ОБЩИЙ СТИЛЬ РАМКИ (без анимаций движения) */
+        .photo-frame {
             aspect-ratio: 3/4;
+            overflow: hidden;
+            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.15);
+            transition: box-shadow 0.3s ease, transform 0.2s ease; /* только box-shadow и transform */
+            will-change: transform;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        /* ПЕРСИКОВЫЕ РАМКИ (скруглённые) */
+        .peach-frame {
             background: #edd7cd;
             border-radius: 16px;
-            overflow: hidden;
             box-shadow: 0 15px 25px -10px rgba(150, 100, 70, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
-            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            animation: frameFloat 6s infinite alternate, softShadow 8s infinite;
-            will-change: transform, box-shadow;  /* оптимизация */
         }
 
-        .peach-frame:nth-child(1) { animation-delay: 0s; }
-        .peach-frame:nth-child(2) { animation-delay: 0.8s; }
-        .peach-frame:nth-child(3) { animation-delay: 1.5s; }
-        .peach-frame:nth-child(4) { animation-delay: 2.2s; }
-
-        @keyframes frameFloat {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-8px) scale(1.01); }  /* уменьшил для батареи/плавности */
-        }
-
-        @keyframes softShadow {
-            0% { box-shadow: 0 15px 25px -10px rgba(150,100,70,0.15), 0 0 0 1px rgba(255,240,230,0.7) inset; }
-            50% { box-shadow: 0 22px 32px -8px rgba(170, 120, 80, 0.25), 0 0 0 2px rgba(255,250,240,0.5) inset; }
-            100% { box-shadow: 0 15px 25px -10px rgba(150,100,70,0.15), 0 0 0 1px rgba(255,240,230,0.7) inset; }
-        }
-
-        /* ======== рамки для нижней (мята) ======= */
+        /* МЯТНЫЕ РАМКИ (фигурные) — убираем постоянную анимацию border-radius, оставляем статику */
         .mint-frame {
-            aspect-ratio: 3/4;
             background: #cde3df;
-            border-radius: 30% 20% 30% 20%;
-            overflow: hidden;
+            border-radius: 30% 20% 30% 20%; /* фиксированное значение */
             box-shadow: 0 15px 25px -15px #477a74, 0 0 0 2px #effbf9 inset;
-            transition: all 0.5s ease;
-            animation: mintWave 7s infinite alternate, borderRadiusShift 9s infinite;
-            will-change: transform, border-radius;
         }
 
-        .mint-frame:nth-child(1) { animation-delay: 0.2s; }
-        .mint-frame:nth-child(2) { animation-delay: 0.9s; }
-        .mint-frame:nth-child(3) { animation-delay: 1.8s; }
-        .mint-frame:nth-child(4) { animation-delay: 2.7s; }
-
-        @keyframes mintWave {
-            0% { transform: translateY(0) scale(1); border-radius: 30% 20% 30% 20%; }
-            50% { transform: translateY(-6px) scale(1.01); border-radius: 35% 25% 35% 25%; box-shadow: 0 28px 30px -15px #2f7068; }
-            100% { transform: translateY(0) scale(1); border-radius: 30% 20% 30% 20%; }
-        }
-
-        @keyframes borderRadiusShift {
-            0% { border-radius: 30% 20% 30% 20%; }
-            33% { border-radius: 35% 25% 25% 35%; }
-            66% { border-radius: 25% 35% 35% 25%; }
-            100% { border-radius: 30% 20% 30% 20%; }
-        }
-
-        /* общее для изображений */
+        /* ИЗОБРАЖЕНИЯ */
         .photo-frame img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: transform 0.5s ease;
-            backface-visibility: hidden;  /* улучшение производительности */
+            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1); /* короткая и плавная */
+            backface-visibility: hidden;
+            -webkit-user-drag: none;
         }
 
-        /* убираем сильное увеличение на тач-устройствах, оставляем лёгкое */
-        .photo-frame:hover img,
+        /* нажатие на телефоне — легкое сжатие (дешевая анимация) */
         .photo-frame:active img {
-            transform: scale(1.05);
+            transform: scale(0.98);
         }
 
-        /* отключаем hover-эффекты на тач-устройствах, но оставляем активное состояние */
+        /* только для устройств с hover (мышь) добавляем увеличение */
         @media (hover: hover) {
             .photo-frame:hover img {
-                transform: scale(1.1);
-                filter: brightness(1.05) contrast(1.05);
+                transform: scale(1.05);
             }
             .peach-frame:hover {
-                border-radius: 12px;
-                box-shadow: 0 40px 50px -12px #b29582;
+                box-shadow: 0 30px 40px -12px #b29582, 0 0 0 1px white inset;
             }
             .mint-frame:hover {
-                border-radius: 40% 20% 40% 20% / 30% 40% 20% 40%;
-                box-shadow: 0 40px 50px -15px #21635e;
+                box-shadow: 0 30px 40px -15px #21635e, 0 0 0 2px #e6fffa inset;
             }
         }
 
-        /* на тач-устройствах легкое нажатие */
-        .photo-frame:active {
-            transform: scale(0.98);
-            transition: transform 0.2s;
-        }
-
-        /* футеры */
+        /* ФУТЕРЫ — без смещений, только изменение цвета */
         .footer {
             margin-top: 2rem;
             padding: 1.2rem 0;
             display: flex;
-            flex-wrap: wrap;  /* чтобы на узких экранах не ломалось */
+            flex-wrap: wrap;
             justify-content: space-between;
             align-items: center;
             gap: 0.8rem;
@@ -312,66 +237,52 @@
             text-transform: uppercase;
             letter-spacing: 0.15em;
             border-top: 1px solid;
-            transition: 0.4s;
+            transition: border-color 0.4s, color 0.4s;
         }
 
         @media (min-width: 480px) {
-            .footer {
-                font-size: 0.85rem;
-            }
+            .footer { font-size: 0.85rem; }
         }
 
         .peach-footer {
             border-top-color: #dbb6a2;
             color: #8a6252;
-            animation: footerPeach 5s infinite alternate;
+            animation: footerPeachSoft 6s infinite alternate;
         }
 
-        @keyframes footerPeach {
-            0% { border-top-color: #dbb6a2; letter-spacing: 0.15em; }
-            50% { border-top-color: #f0b090; letter-spacing: 0.25em; }
-            100% { border-top-color: #dbb6a2; letter-spacing: 0.15em; }
+        @keyframes footerPeachSoft {
+            0% { border-top-color: #dbb6a2; color: #8a6252; }
+            50% { border-top-color: #ecbaa0; color: #a87a66; }
+            100% { border-top-color: #dbb6a2; color: #8a6252; }
         }
 
         .mint-footer {
             border-top-color: #8ec9c2;
             color: #2f6b66;
-            animation: footerMint 6s infinite alternate;
+            animation: footerMintSoft 6s infinite alternate;
         }
 
-        @keyframes footerMint {
-            0% { border-top-color: #8ec9c2; opacity: 0.8; }
-            50% { border-top-color: #b5e7e0; opacity: 1; }
-            100% { border-top-color: #8ec9c2; opacity: 0.8; }
+        @keyframes footerMintSoft {
+            0% { border-top-color: #8ec9c2; color: #2f6b66; }
+            50% { border-top-color: #afe6df; color: #3d8b84; }
+            100% { border-top-color: #8ec9c2; color: #2f6b66; }
         }
 
-        .footer span {
-            display: inline-block;
-            animation: textWave 4s infinite alternate;
-        }
-
-        @keyframes textWave {
-            0% { transform: translateX(0); }
-            50% { transform: translateX(3px); filter: brightness(1.1); }
-            100% { transform: translateX(0); }
-        }
-
-        /* разделитель */
+        /* РАЗДЕЛИТЕЛЬ — простая линейная анимация перемещения фона (дешево) */
         .divider {
             height: 4px;
             background: linear-gradient(90deg, #edd7cd, #d1e7e3, #edd7cd);
             width: 100%;
-            animation: dividerMove 8s infinite;
+            animation: dividerSlide 10s infinite alternate;
             background-size: 200% 100%;
         }
 
-        @keyframes dividerMove {
+        @keyframes dividerSlide {
             0% { background-position: 0% 0%; }
-            50% { background-position: 100% 0%; }
-            100% { background-position: 0% 0%; }
+            100% { background-position: 100% 0%; }
         }
 
-        /* курсоры — на мобильных скрыты (pointer-events: none уже, но убираем визуальный шум) */
+        /* КУРСОРЫ — полностью скрыты на мобильных (медиазапрос ниже) */
         .peach-cursor, .mint-cursor {
             position: fixed;
             width: 40px;
@@ -379,87 +290,76 @@
             border-radius: 50%;
             pointer-events: none;
             z-index: 9999;
-            transition: 0.1s ease-out, width 0.2s, height 0.2s, background 0.2s;
+            transition: 0.05s linear; /* минимальная задержка */
             mix-blend-mode: soft-light;
-            will-change: left, top;
+            will-change: left, top; /* оптимизация */
         }
 
         .peach-cursor {
-            background: rgba(255, 190, 160, 0.4);
+            background: rgba(255, 190, 160, 0.3);
             border: 1px solid #fcaa8f;
-            backdrop-filter: blur(2px);
-            box-shadow: 0 0 30px #ffc7b1;
-            animation: cursorBreath 3s infinite alternate;
         }
 
         .mint-cursor {
-            background: rgba(140, 220, 210, 0.35);
+            background: rgba(140, 220, 210, 0.25);
             border: 1px solid #8dd6cf;
-            backdrop-filter: blur(2px);
-            box-shadow: 0 0 30px #abe2db;
-            animation: cursorBreath 3s infinite alternate-reverse;
         }
 
-        @keyframes cursorBreath {
-            0% { transform: scale(1); opacity: 0.4; }
-            100% { transform: scale(1.2); opacity: 0.8; }
-        }
-
-        /* скрываем курсоры на мобильных, где нет мыши или маленький экран */
+        /* скрываем курсоры на мобильных и планшетах */
         @media (max-width: 768px), (pointer: coarse) {
             .peach-cursor, .mint-cursor {
                 display: none;
             }
         }
 
-        /* частицы и пузырьки — уменьшаем количество на мобильных (сделано через скрипт) */
-
+        /* ЧАСТИЦЫ — значительно уменьшено количество в скрипте + убраны лишние анимации */
         .peach-particle {
             position: absolute;
             background: #ffdbca;
-            width: 4px;  /* меньше на мобильных */
-            height: 4px;
-            border-radius: 70% 30% 60% 40%;
-            filter: blur(1.5px);
-            animation: particleDrift 10s infinite linear;
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: particleFloat 9s infinite ease-in-out;
             opacity: 0.2;
+            will-change: transform, opacity;
         }
 
-        @media (min-width: 768px) {
-            .peach-particle {
-                width: 6px;
-                height: 6px;
-            }
-        }
-
-        @keyframes particleDrift {
-            0% { transform: translate(0, 0) rotate(0deg); opacity: 0.2; }
-            100% { transform: translate(30px, -80px) rotate(200deg); opacity: 0; }
+        @keyframes particleFloat {
+            0% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+            50% { transform: translate(20px, -40px) scale(1.5); opacity: 0.3; }
+            100% { transform: translate(40px, -80px) scale(1); opacity: 0; }
         }
 
         .bubble-mint {
             position: absolute;
-            background: rgba(180, 240, 235, 0.15);
+            background: rgba(180, 240, 235, 0.1);
             border-radius: 50%;
             pointer-events: none;
-            animation: bubbleRise 10s infinite;
-            box-shadow: inset 0 0 10px #c5f7f0;
+            animation: bubbleRise 12s infinite ease-in-out;
+            box-shadow: inset 0 0 5px #c5f7f0;
+            will-change: transform, opacity;
         }
 
         @keyframes bubbleRise {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            20% { opacity: 0.3; }
-            100% { transform: translateY(-20vh) scale(1.2); opacity: 0; }
+            0% { transform: translateY(100vh) scale(0.2); opacity: 0; }
+            20% { opacity: 0.2; }
+            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
         }
 
-        /* дополнительные мобильные корректировки */
+        /* мобильные корректировки */
         @media (max-width: 480px) {
-            .container {
-                padding: 1rem 0.8rem;
-            }
-            .footer {
-                flex-direction: column;
-                text-align: center;
+            .container { padding: 1rem 0.8rem; }
+            .footer { flex-direction: column; text-align: center; }
+            .photo-grid { gap: 8px; } /* чуть меньше отступы */
+        }
+
+        /* отключаем любые анимации, которые могут тормозить, на очень слабых устройствах */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
@@ -469,13 +369,13 @@
     <section class="half peach-half" id="peachHalf">
         <div class="container">
             <div class="peach-title">АНАСТАСИЯ</div>
+            <div><img src="akita_one.png" alt=""></div>
             <div class="peach-wave">soft energy</div>
 
             <div class="photo-grid">
-                <!-- Фото 1-4 для верхней части - исправлено: 4 фото -->
+                <!-- Две фотографии в верхней части (как и просили) -->
                 <div class="photo-frame peach-frame"><img src="photo_2026-03-04_21-45-31.png" alt=""></div>
                 <div class="photo-frame peach-frame"><img src="photo_2026-03-04_21-44-44.png" alt=""></div>
-
             </div>
 
             <div class="footer peach-footer">
@@ -483,23 +383,21 @@
                 <span>more authenticity ✦</span>
             </div>
         </div>
-        <!-- курсор персика (скрыт на моб) -->
+        <!-- курсоры (десктоп) -->
         <div class="peach-cursor" id="peachCursor"></div>
     </section>
 
     <div class="divider"></div>
 
-    
     <section class="half mint-half" id="mintHalf">
         <div class="container">
             <div class="mint-title">АНАСТАСИЯ</div>
             <div class="mint-sub">never look back</div>
 
             <div class="photo-grid">
-                <!-- Фото 5-8 для нижней части - также 4 шт -->
+                <!-- Две фотографии в нижней части -->
                 <div class="photo-frame mint-frame"><img src="photo_2026-03-04_21-50-31.png" alt=""></div>
                 <div class="photo-frame mint-frame"><img src="photo_2026-03-04_22-34-25.png" alt=""></div>
-
             </div>
 
             <div class="footer mint-footer">
@@ -512,83 +410,100 @@
 
     <script>
         (function() {
-            const peachCursor = document.getElementById('peachCursor');
-            const mintCursor = document.getElementById('mintCursor');
+            // ОПТИМИЗИРОВАННЫЙ СКРИПТ — минимум тяжелых операций
             const peachHalf = document.getElementById('peachHalf');
             const mintHalf = document.getElementById('mintHalf');
+            const peachCursor = document.getElementById('peachCursor');
+            const mintCursor = document.getElementById('mintCursor');
 
-            // проверяем, не мобильное ли устройство (но курсоры и так скрыты в CSS, но оставим логику)
+            // Проверка на мобильное устройство (сенсорный ввод или маленький экран)
             const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
 
+            // КУРСОРЫ ТОЛЬКО ДЛЯ ДЕСКТОПА (если не мобила и курсоры существуют)
             if (!isMobile && peachCursor && mintCursor) {
-                // движение курсоров только на десктопе
-                document.addEventListener('mousemove', (e) => {
-                    const y = e.clientY;
-                    const half = window.innerHeight / 2;
-                    
-                    [peachCursor, mintCursor].forEach(c => {
-                        if (!c) return;
-                        c.style.left = e.clientX - 20 + 'px';
-                        c.style.top = e.clientY - 20 + 'px';
-                    });
+                let mouseX = 0, mouseY = 0;
+                let halfHeight = window.innerHeight / 2;
 
-                    if (y < half) {
+                // используем requestAnimationFrame для плавности и оптимизации
+                function updateCursors() {
+                    peachCursor.style.left = mouseX - 20 + 'px';
+                    peachCursor.style.top = mouseY - 20 + 'px';
+                    mintCursor.style.left = mouseX - 20 + 'px';
+                    mintCursor.style.top = mouseY - 20 + 'px';
+
+                    if (mouseY < halfHeight) {
                         peachCursor.style.opacity = '1';
                         mintCursor.style.opacity = '0';
                     } else {
                         peachCursor.style.opacity = '0';
                         mintCursor.style.opacity = '1';
                     }
+                }
+
+                document.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    halfHeight = window.innerHeight / 2; // обновляем при изменении
+                    requestAnimationFrame(updateCursors);
+                });
+
+                // обновление halfHeight при ресайзе
+                window.addEventListener('resize', () => {
+                    halfHeight = window.innerHeight / 2;
                 });
             }
 
-            // частицы — меньше на мобильных
-            function createPeachParticles() {
-                const count = isMobile ? 8 : 18;  // меньше на мобильных
-                for (let i = 0; i < count; i++) {
+            // ЧАСТИЦЫ — сильно уменьшаем количество на мобильных
+            function createParticles() {
+                // персиковые частицы
+                const peachCount = isMobile ? 6 : 14; // вдвое меньше
+                for (let i = 0; i < peachCount; i++) {
                     const p = document.createElement('div');
                     p.className = 'peach-particle';
                     p.style.left = Math.random() * 100 + '%';
                     p.style.top = Math.random() * 100 + '%';
-                    p.style.animationDelay = Math.random() * 7 + 's';
-                    p.style.animationDuration = 6 + Math.random() * 10 + 's';
-                    p.style.background = `rgba(255, ${190 + Math.floor(40 * Math.random())}, ${150 + Math.floor(70 * Math.random())}, 0.25)`;
+                    p.style.animationDelay = Math.random() * 5 + 's';
+                    p.style.animationDuration = 7 + Math.random() * 8 + 's';
+                    p.style.background = `rgba(255, ${200 + Math.floor(40 * Math.random())}, ${160 + Math.floor(50 * Math.random())}, 0.25)`;
                     peachHalf.appendChild(p);
                 }
-            }
 
-            function createMintBubbles() {
-                const count = isMobile ? 10 : 22;
-                for (let i = 0; i < count; i++) {
+                // мятные пузырьки
+                const mintCount = isMobile ? 8 : 18;
+                for (let i = 0; i < mintCount; i++) {
                     const b = document.createElement('div');
                     b.className = 'bubble-mint';
                     b.style.left = Math.random() * 100 + '%';
-                    b.style.width = (Math.random() * 30 + 8) + 'px';  // мельче
+                    b.style.width = (Math.random() * 25 + 6) + 'px'; // меньше
                     b.style.height = b.style.width;
-                    b.style.animationDelay = Math.random() * 8 + 's';
-                    b.style.animationDuration = 5 + Math.random() * 10 + 's';
+                    b.style.animationDelay = Math.random() * 6 + 's';
+                    b.style.animationDuration = 8 + Math.random() * 10 + 's';
                     mintHalf.appendChild(b);
                 }
             }
 
-            // лёгкое изменение оттенка фона — плавное, не слишком часто
-            let hueShift = 0;
+            // фоновое изменение оттенка — раз в 5 секунд, очень плавно, без перерисовки layout
+            let hueToggle = false;
             setInterval(() => {
                 if (!peachHalf || !mintHalf) return;
-                peachHalf.style.background = `linear-gradient(145deg, ${hueShift % 2 ? '#fff3ec' : '#faddd2'} 0%, #fce6dc 100%)`;
-                mintHalf.style.background = `linear-gradient(145deg, ${hueShift % 2 ? '#def0ed' : '#cbeae3'} 0%, #d4f0ea 100%)`;
-                hueShift++;
-            }, 4000);  // реже
+                // меняем только фон, не затрагивая остальное
+                peachHalf.style.background = hueToggle 
+                    ? 'linear-gradient(145deg, #ffefe8 0%, #fce1d8 100%)' 
+                    : 'linear-gradient(145deg, #fff1eb 0%, #fad9cf 100%)';
+                mintHalf.style.background = hueToggle 
+                    ? 'linear-gradient(145deg, #ddf0ed 0%, #cceae3 100%)' 
+                    : 'linear-gradient(145deg, #e0f2f1 0%, #c8e6e0 100%)';
+                hueToggle = !hueToggle;
+            }, 5000); // увеличено до 5 секунд для меньшей нагрузки
 
-            window.addEventListener('load', () => {
-                createPeachParticles();
-                createMintBubbles();
-            });
+            // Запускаем после загрузки DOM
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', createParticles);
+            } else {
+                createParticles();
+            }
 
-            // адаптация при повороте экрана
-            window.addEventListener('resize', function() {
-                // можно пересоздать частицы при необходимости, но для простоты оставим как есть
-            });
+            // обработка ресайза для обновления частиц — не делаем, так как они уже есть, это нормально
         })();
     </script>
 </body>
