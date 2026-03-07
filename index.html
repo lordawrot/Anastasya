@@ -2,11 +2,9 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- КЛЮЧЕВОЙ МЕТА-ТЕГ для правильного масштабирования на телефонах -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>АНАСТАСИЯ · плавная динамика</title>
+    <title>АНАСТАСИЯ</title>
     <style>
-        /* БАЗОВЫЕ СБРОСЫ И УЛУЧШЕНИЯ ПРОИЗВОДИТЕЛЬНОСТИ */
         * {
             margin: 0;
             padding: 0;
@@ -16,28 +14,22 @@
         body {
             font-family: 'Segoe UI', 'Roboto', system-ui, sans-serif;
             background: #faf3f0;
-            scroll-behavior: smooth; /* плавный скролл */
             overflow-x: hidden;
-            /* отключаем нативные pull-to-refresh и подсветку касания на мобильных */
             overscroll-behavior: none;
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* ОБЩИЙ КОНТЕЙНЕР СЕКЦИИ — используем 100dvh для реальной высоты экрана */
+        /* СЕКЦИИ */
         .half {
-            min-height: 100vh;       /* fallback */
-            min-height: 100dvh;       /* современные браузеры — точная высота без адресной строки */
+            min-height: 100vh;
+            min-height: 100dvh;
             width: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            overflow: hidden;          /* скрываем выходящие частицы */
+            overflow: hidden;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            /* включаем аппаратное ускорение для слоёв */
-            transform: translateZ(0);
-            backface-visibility: hidden;
-            will-change: transform;    /* подсказка браузеру для оптимизации */
         }
 
         /* ВЕРХНЯЯ ПОЛОВИНА — персик */
@@ -46,30 +38,10 @@
             color: #4a3b36;
         }
 
-        /* плавное свечение — делаем очень лёгким, без частых изменений layout */
-        .peach-half::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 30% 50%, rgba(255, 230, 210, 0.5) 0%, transparent 60%);
-            pointer-events: none;
-            opacity: 0.4;
-            /* вместо анимации движения фона — статика, меньше нагрузка */
-        }
-
         /* НИЖНЯЯ ПОЛОВИНА — мята */
         .mint-half {
             background: linear-gradient(145deg, #e0f2f1 0%, #c8e6e0 100%);
             color: #2b5e5a;
-        }
-
-        .mint-half::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(circle at 80% 30%, rgba(190, 240, 230, 0.5) 0%, transparent 60%);
-            pointer-events: none;
-            opacity: 0.4;
         }
 
         /* КОНТЕЙНЕР КОНТЕНТА */
@@ -78,30 +50,21 @@
             margin: 0 auto;
             padding: 1.5rem 1rem;
             position: relative;
-            z-index: 10;
+            z-index: 10; /* контент выше сердечек */
             width: 100%;
         }
 
-        /* ТИПОГРАФИЯ — ОТЗЫВЧИВАЯ И ЛЁГКАЯ */
+        /* ТИПОГРАФИЯ — без анимаций */
         .peach-title {
-            font-size: clamp(2.2rem, 11vw, 5rem);  /* немного уменьшили максимальную для экономии */
+            font-size: clamp(2.2rem, 11vw, 5rem);
             font-weight: 300;
             letter-spacing: 0.1em;
             color: #6d4c41;
             text-transform: uppercase;
             margin-bottom: 0.3rem;
             text-shadow: 0 0 10px rgba(255, 215, 190, 0.6);
-            /* убираем сложную анимацию floatWord на мобильных — оставляем только очень легкое смещение через трансформ */
-            animation: none; /* отключаем, так как это вызывает перерисовку */
-            /* небольшой эффект присутствия через opacity */
-            transition: text-shadow 0.3s;
             word-break: break-word;
             line-height: 1.2;
-        }
-
-        /* добавляем очень легкое дыхание текста только через opacity (дешево) */
-        .peach-title {
-            animation: gentlePulse 5s infinite alternate;
         }
 
         .mint-title {
@@ -112,13 +75,7 @@
             text-transform: uppercase;
             margin-bottom: 0.8rem;
             text-shadow: 0 0 15px #b0e0dd;
-            animation: gentlePulse 6s infinite alternate;
             line-height: 1.2;
-        }
-
-        @keyframes gentlePulse {
-            0% { opacity: 0.9; text-shadow: 0 0 8px currentColor; }
-            100% { opacity: 1; text-shadow: 0 0 18px currentColor; }
         }
 
         .peach-wave {
@@ -128,14 +85,6 @@
             margin-bottom: 1.5rem;
             padding-left: 1rem;
             border-left: 2px solid #dbb6a2;
-            /* убираем анимации движения — оставляем только изменение цвета (дешево) */
-            animation: colorPeach 8s infinite alternate;
-        }
-
-        @keyframes colorPeach {
-            0% { color: #aa7e6a; border-left-color: #dbb6a2; }
-            50% { color: #b68973; border-left-color: #e6b49a; }
-            100% { color: #aa7e6a; border-left-color: #dbb6a2; }
         }
 
         .mint-sub {
@@ -147,83 +96,56 @@
             padding: 0 0.5rem 0.5rem;
             border-bottom: 1px dashed #8ec9c2;
             display: inline-block;
-            animation: shiftColor 8s infinite alternate;
             word-break: break-word;
         }
 
-        @keyframes shiftColor {
-            0% { color: #3c8d87; border-bottom-color: #8ec9c2; }
-            50% { color: #57aca4; border-bottom-color: #b0dfd8; }
-            100% { color: #3c8d87; border-bottom-color: #8ec9c2; }
-        }
-
-        /* СЕТКА ФОТО — 2 колонки, без анимаций трансформации на мобильных (тяжело) */
+        /* СЕТКА ФОТО — 2 колонки */
         .photo-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 12px;
             margin: 1.5rem 0;
+            position: relative;
+            z-index: 5; /* фото выше фона, но ниже контейнера */
         }
 
         @media (min-width: 480px) {
             .photo-grid { gap: 20px; }
         }
 
-        /* ОБЩИЙ СТИЛЬ РАМКИ (без анимаций движения) */
+        /* РАМКИ (без анимаций) */
         .photo-frame {
             aspect-ratio: 3/4;
             overflow: hidden;
             box-shadow: 0 10px 20px -8px rgba(0,0,0,0.15);
-            transition: box-shadow 0.3s ease, transform 0.2s ease; /* только box-shadow и transform */
-            will-change: transform;
-            backface-visibility: hidden;
-            transform: translateZ(0);
+            position: relative;
+            z-index: 15; /* фото выше сердечек */
+            background: inherit; /* чтобы рамки не просвечивали */
         }
 
-        /* ПЕРСИКОВЫЕ РАМКИ (скруглённые) */
         .peach-frame {
             background: #edd7cd;
             border-radius: 16px;
             box-shadow: 0 15px 25px -10px rgba(150, 100, 70, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.7) inset;
         }
 
-        /* МЯТНЫЕ РАМКИ (фигурные) — убираем постоянную анимацию border-radius, оставляем статику */
         .mint-frame {
             background: #cde3df;
-            border-radius: 30% 20% 30% 20%; /* фиксированное значение */
+            border-radius: 30% 20% 30% 20%;
             box-shadow: 0 15px 25px -15px #477a74, 0 0 0 2px #effbf9 inset;
         }
 
-        /* ИЗОБРАЖЕНИЯ */
         .photo-frame img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
-            transition: transform 0.3s cubic-bezier(0.2, 0.9, 0.3, 1); /* короткая и плавная */
-            backface-visibility: hidden;
             -webkit-user-drag: none;
+            position: relative;
+            z-index: 20; /* изображения выше всего */
         }
 
-        /* нажатие на телефоне — легкое сжатие (дешевая анимация) */
-        .photo-frame:active img {
-            transform: scale(0.98);
-        }
-
-        /* только для устройств с hover (мышь) добавляем увеличение */
-        @media (hover: hover) {
-            .photo-frame:hover img {
-                transform: scale(1.05);
-            }
-            .peach-frame:hover {
-                box-shadow: 0 30px 40px -12px #b29582, 0 0 0 1px white inset;
-            }
-            .mint-frame:hover {
-                box-shadow: 0 30px 40px -15px #21635e, 0 0 0 2px #e6fffa inset;
-            }
-        }
-
-        /* ФУТЕРЫ — без смещений, только изменение цвета */
+        /* ФУТЕРЫ */
         .footer {
             margin-top: 2rem;
             padding: 1.2rem 0;
@@ -237,7 +159,8 @@
             text-transform: uppercase;
             letter-spacing: 0.15em;
             border-top: 1px solid;
-            transition: border-color 0.4s, color 0.4s;
+            position: relative;
+            z-index: 15;
         }
 
         @media (min-width: 480px) {
@@ -247,133 +170,94 @@
         .peach-footer {
             border-top-color: #dbb6a2;
             color: #8a6252;
-            animation: footerPeachSoft 6s infinite alternate;
-        }
-
-        @keyframes footerPeachSoft {
-            0% { border-top-color: #dbb6a2; color: #8a6252; }
-            50% { border-top-color: #ecbaa0; color: #a87a66; }
-            100% { border-top-color: #dbb6a2; color: #8a6252; }
         }
 
         .mint-footer {
             border-top-color: #8ec9c2;
             color: #2f6b66;
-            animation: footerMintSoft 6s infinite alternate;
         }
 
-        @keyframes footerMintSoft {
-            0% { border-top-color: #8ec9c2; color: #2f6b66; }
-            50% { border-top-color: #afe6df; color: #3d8b84; }
-            100% { border-top-color: #8ec9c2; color: #2f6b66; }
-        }
-
-        /* РАЗДЕЛИТЕЛЬ — простая линейная анимация перемещения фона (дешево) */
+        /* РАЗДЕЛИТЕЛЬ */
         .divider {
             height: 4px;
             background: linear-gradient(90deg, #edd7cd, #d1e7e3, #edd7cd);
             width: 100%;
-            animation: dividerSlide 10s infinite alternate;
-            background-size: 200% 100%;
+            position: relative;
+            z-index: 25;
         }
 
-        @keyframes dividerSlide {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 100% 0%; }
-        }
-
-        /* КУРСОРЫ — полностью скрыты на мобильных (медиазапрос ниже) */
-        .peach-cursor, .mint-cursor {
+        /* ========== ПАДАЮЩИЕ СЕРДЕЧКИ (теперь под контентом) ========== */
+        .heart-container {
             position: fixed;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* чтобы не мешали кликам */
+            z-index: 1; /* ниже всего контента (z-index контейнера 10) */
+            overflow: hidden;
+        }
+
+        .heart-particle {
+            position: absolute;
+            font-size: 20px;
+            line-height: 1;
+            user-select: none;
             pointer-events: none;
-            z-index: 9999;
-            transition: 0.05s linear; /* минимальная задержка */
-            mix-blend-mode: soft-light;
-            will-change: left, top; /* оптимизация */
+            opacity: 0.5;
+            filter: drop-shadow(0 0 3px rgba(255, 120, 160, 0.3));
+            animation: heartFall linear infinite;
+            top: -10vh;
+            will-change: transform;
+            /* добавляем случайный символ через before, но оставим и textContent для надежности */
         }
 
-        .peach-cursor {
-            background: rgba(255, 190, 160, 0.3);
-            border: 1px solid #fcaa8f;
+        /* стандартное сердечко (красное) */
+        .heart-particle::before {
+            display: none; /* отключаем, используем textContent */
         }
 
-        .mint-cursor {
-            background: rgba(140, 220, 210, 0.25);
-            border: 1px solid #8dd6cf;
-        }
-
-        /* скрываем курсоры на мобильных и планшетах */
-        @media (max-width: 768px), (pointer: coarse) {
-            .peach-cursor, .mint-cursor {
-                display: none;
+        /* анимация падения */
+        @keyframes heartFall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0.5;
             }
-        }
-
-        /* ЧАСТИЦЫ — значительно уменьшено количество в скрипте + убраны лишние анимации */
-        .peach-particle {
-            position: absolute;
-            background: #ffdbca;
-            width: 3px;
-            height: 3px;
-            border-radius: 50%;
-            filter: blur(1px);
-            animation: particleFloat 9s infinite ease-in-out;
-            opacity: 0.2;
-            will-change: transform, opacity;
-        }
-
-        @keyframes particleFloat {
-            0% { transform: translate(0, 0) scale(1); opacity: 0.1; }
-            50% { transform: translate(20px, -40px) scale(1.5); opacity: 0.3; }
-            100% { transform: translate(40px, -80px) scale(1); opacity: 0; }
-        }
-
-        .bubble-mint {
-            position: absolute;
-            background: rgba(180, 240, 235, 0.1);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: bubbleRise 12s infinite ease-in-out;
-            box-shadow: inset 0 0 5px #c5f7f0;
-            will-change: transform, opacity;
-        }
-
-        @keyframes bubbleRise {
-            0% { transform: translateY(100vh) scale(0.2); opacity: 0; }
-            20% { opacity: 0.2; }
-            100% { transform: translateY(-20vh) scale(1); opacity: 0; }
+            80% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
         }
 
         /* мобильные корректировки */
         @media (max-width: 480px) {
             .container { padding: 1rem 0.8rem; }
             .footer { flex-direction: column; text-align: center; }
-            .photo-grid { gap: 8px; } /* чуть меньше отступы */
+            .photo-grid { gap: 8px; }
+            .heart-particle { font-size: 16px; }
         }
 
-        /* отключаем любые анимации, которые могут тормозить, на очень слабых устройствах */
+        /* если пользователь предпочитает минимум анимаций */
         @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
+            .heart-particle {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Контейнер для сердечек (под всем контентом) -->
+    <div class="heart-container" id="heartContainer"></div>
     
     <section class="half peach-half" id="peachHalf">
         <div class="container">
             <div class="peach-title">АНАСТАСИЯ</div>
-            <div><img src="akita_one.png" alt=""></div>
-            <div class="peach-wave">soft energy</div>
+            <div class="peach-wave">C 8 марта!❤️</div>
 
             <div class="photo-grid">
-                <!-- Две фотографии в верхней части (как и просили) -->
                 <div class="photo-frame peach-frame"><img src="photo_2026-03-04_21-45-31.png" alt=""></div>
                 <div class="photo-frame peach-frame"><img src="photo_2026-03-04_21-44-44.png" alt=""></div>
             </div>
@@ -383,19 +267,15 @@
                 <span>more authenticity ✦</span>
             </div>
         </div>
-        <!-- курсоры (десктоп) -->
-        <div class="peach-cursor" id="peachCursor"></div>
     </section>
 
     <div class="divider"></div>
 
     <section class="half mint-half" id="mintHalf">
         <div class="container">
-            <div class="mint-title">АНАСТАСИЯ</div>
             <div class="mint-sub">never look back</div>
 
             <div class="photo-grid">
-                <!-- Две фотографии в нижней части -->
                 <div class="photo-frame mint-frame"><img src="photo_2026-03-04_21-50-31.png" alt=""></div>
                 <div class="photo-frame mint-frame"><img src="photo_2026-03-04_22-34-25.png" alt=""></div>
             </div>
@@ -405,105 +285,76 @@
                 <span>just me ✦</span>
             </div>
         </div>
-        <div class="mint-cursor" id="mintCursor"></div>
     </section>
 
     <script>
         (function() {
-            // ОПТИМИЗИРОВАННЫЙ СКРИПТ — минимум тяжелых операций
-            const peachHalf = document.getElementById('peachHalf');
-            const mintHalf = document.getElementById('mintHalf');
-            const peachCursor = document.getElementById('peachCursor');
-            const mintCursor = document.getElementById('mintCursor');
-
-            // Проверка на мобильное устройство (сенсорный ввод или маленький экран)
-            const isMobile = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
-
-            // КУРСОРЫ ТОЛЬКО ДЛЯ ДЕСКТОПА (если не мобила и курсоры существуют)
-            if (!isMobile && peachCursor && mintCursor) {
-                let mouseX = 0, mouseY = 0;
-                let halfHeight = window.innerHeight / 2;
-
-                // используем requestAnimationFrame для плавности и оптимизации
-                function updateCursors() {
-                    peachCursor.style.left = mouseX - 20 + 'px';
-                    peachCursor.style.top = mouseY - 20 + 'px';
-                    mintCursor.style.left = mouseX - 20 + 'px';
-                    mintCursor.style.top = mouseY - 20 + 'px';
-
-                    if (mouseY < halfHeight) {
-                        peachCursor.style.opacity = '1';
-                        mintCursor.style.opacity = '0';
-                    } else {
-                        peachCursor.style.opacity = '0';
-                        mintCursor.style.opacity = '1';
+            const heartContainer = document.getElementById('heartContainer');
+            
+            // Функция создания одного сердца
+            function createSingleHeart() {
+                if (!heartContainer) return;
+                
+                const heart = document.createElement('div');
+                heart.className = 'heart-particle';
+                
+                // Выбираем случайный символ сердечка
+                const symbols = ['❤️', '🧡', '💛', '💚', '💙', '💜', '🤍'];
+                // Для верхней половины больше тёплых, для нижней — холодных, но сделаем полностью случайно
+                // чтобы было красиво и равномерно
+                heart.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+                
+                // Случайный размер от 15 до 35px
+                const size = Math.floor(Math.random() * 20) + 15;
+                heart.style.fontSize = size + 'px';
+                
+                // Случайная позиция по горизонтали
+                const left = Math.random() * 100;
+                heart.style.left = left + '%';
+                
+                // Случайная прозрачность
+                heart.style.opacity = (Math.random() * 0.5 + 0.3).toString(); // 0.3-0.8
+                
+                // Длительность падения
+                const duration = Math.random() * 8 + 6; // 6-14 сек
+                heart.style.animationDuration = duration + 's';
+                
+                // Небольшая задержка для естественности
+                const delay = Math.random() * 2; // 0-2 сек
+                heart.style.animationDelay = delay + 's';
+                
+                heartContainer.appendChild(heart);
+                
+                // Удаляем сердце после окончания анимации, чтобы не накапливались
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.remove();
                     }
-                }
-
-                document.addEventListener('mousemove', (e) => {
-                    mouseX = e.clientX;
-                    mouseY = e.clientY;
-                    halfHeight = window.innerHeight / 2; // обновляем при изменении
-                    requestAnimationFrame(updateCursors);
-                });
-
-                // обновление halfHeight при ресайзе
-                window.addEventListener('resize', () => {
-                    halfHeight = window.innerHeight / 2;
-                });
+                }, (duration + delay) * 1000);
             }
-
-            // ЧАСТИЦЫ — сильно уменьшаем количество на мобильных
-            function createParticles() {
-                // персиковые частицы
-                const peachCount = isMobile ? 6 : 14; // вдвое меньше
-                for (let i = 0; i < peachCount; i++) {
-                    const p = document.createElement('div');
-                    p.className = 'peach-particle';
-                    p.style.left = Math.random() * 100 + '%';
-                    p.style.top = Math.random() * 100 + '%';
-                    p.style.animationDelay = Math.random() * 5 + 's';
-                    p.style.animationDuration = 7 + Math.random() * 8 + 's';
-                    p.style.background = `rgba(255, ${200 + Math.floor(40 * Math.random())}, ${160 + Math.floor(50 * Math.random())}, 0.25)`;
-                    peachHalf.appendChild(p);
+            
+            // Создаём сердца с интервалом (по одному)
+            function startHeartRain() {
+                // Создаём несколько сердец сразу для заполнения, но с интервалом
+                // Сначала создадим 5 штук с небольшими интервалами
+                for (let i = 0; i < 5; i++) {
+                    setTimeout(() => {
+                        createSingleHeart();
+                    }, i * 300); // каждые 300 мс
                 }
-
-                // мятные пузырьки
-                const mintCount = isMobile ? 8 : 18;
-                for (let i = 0; i < mintCount; i++) {
-                    const b = document.createElement('div');
-                    b.className = 'bubble-mint';
-                    b.style.left = Math.random() * 100 + '%';
-                    b.style.width = (Math.random() * 25 + 6) + 'px'; // меньше
-                    b.style.height = b.style.width;
-                    b.style.animationDelay = Math.random() * 6 + 's';
-                    b.style.animationDuration = 8 + Math.random() * 10 + 's';
-                    mintHalf.appendChild(b);
-                }
+                
+                // Затем запускаем регулярное создание каждые 500-1500 мс
+                setInterval(() => {
+                    createSingleHeart();
+                }, Math.random() * 1000 + 500); // случайный интервал 500-1500 мс
             }
-
-            // фоновое изменение оттенка — раз в 5 секунд, очень плавно, без перерисовки layout
-            let hueToggle = false;
-            setInterval(() => {
-                if (!peachHalf || !mintHalf) return;
-                // меняем только фон, не затрагивая остальное
-                peachHalf.style.background = hueToggle 
-                    ? 'linear-gradient(145deg, #ffefe8 0%, #fce1d8 100%)' 
-                    : 'linear-gradient(145deg, #fff1eb 0%, #fad9cf 100%)';
-                mintHalf.style.background = hueToggle 
-                    ? 'linear-gradient(145deg, #ddf0ed 0%, #cceae3 100%)' 
-                    : 'linear-gradient(145deg, #e0f2f1 0%, #c8e6e0 100%)';
-                hueToggle = !hueToggle;
-            }, 5000); // увеличено до 5 секунд для меньшей нагрузки
-
+            
             // Запускаем после загрузки DOM
             if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', createParticles);
+                document.addEventListener('DOMContentLoaded', startHeartRain);
             } else {
-                createParticles();
+                startHeartRain();
             }
-
-            // обработка ресайза для обновления частиц — не делаем, так как они уже есть, это нормально
         })();
     </script>
 </body>
